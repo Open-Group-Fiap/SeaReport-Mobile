@@ -6,6 +6,7 @@ import { RootStackParamList } from '../navigation'
 import UserIcon from 'assets/svgs/userIcon'
 import WaveIcon from 'assets/svgs/waveIcon'
 import HomeIcon from 'assets/svgs/homeIcon'
+import { colorPalette } from 'utils/colors'
 
 type OverviewScreenNavigationProps = StackNavigationProp<RootStackParamList, 'Overview'>
 
@@ -39,7 +40,7 @@ export default function Overview() {
 const styles = StyleSheet.create({
     button: {
         alignItems: 'center',
-        backgroundColor: '#6366F1',
+        backgroundColor: colorPalette.main,
         borderRadius: 24,
         elevation: 5,
         flexDirection: 'row',
