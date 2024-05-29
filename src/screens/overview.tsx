@@ -18,7 +18,7 @@ export default function Overview() {
         </View>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('Details', { name: 'Dan' })}>
+          >
           <Text style={styles.buttonText}>Show Details</Text>
         </TouchableOpacity>
       </View>
