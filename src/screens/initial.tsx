@@ -3,12 +3,9 @@ import { StackNavigationProp } from '@react-navigation/stack'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 import { RootStackParamList } from '../navigation'
-import UserIcon from 'assets/svgs/userIcon'
-import WaveIcon from 'assets/svgs/waveIcon'
-import HomeIcon from 'assets/svgs/homeIcon'
 import { colorPalette } from 'utils/colors'
 
-type OverviewScreenNavigationProps = StackNavigationProp<RootStackParamList, 'Overview'>
+type OverviewScreenNavigationProps = StackNavigationProp<RootStackParamList, 'initial'>
 
 export default function InitialScreen() {
     const navigation = useNavigation<OverviewScreenNavigationProps>()
@@ -25,7 +22,11 @@ export default function InitialScreen() {
                     <TouchableOpacity style={styles.loginButton}>
                         <Text style={styles.loginText}>Login</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.registerButton}>
+                    <TouchableOpacity
+                        style={styles.registerButton}
+                        onPress={() => {
+                            navigation.push('register')
+                        }}>
                         <Text style={styles.registerText}>Registrar</Text>
                     </TouchableOpacity>
                 </View>

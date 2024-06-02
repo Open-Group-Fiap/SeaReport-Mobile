@@ -1,12 +1,12 @@
-import { Feather } from '@expo/vector-icons'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
-import { Text, View, StyleSheet } from 'react-native'
 
 import InitialScreen from '../screens/initial'
+import RegisterScreen from '~/screens/register'
 
 export type RootStackParamList = {
-    Overview: undefined
+    initial: undefined
+    register: undefined
 }
 
 const Stack = createStackNavigator<RootStackParamList>()
@@ -14,22 +14,14 @@ const Stack = createStackNavigator<RootStackParamList>()
 export default function RootStack() {
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="Overview" screenOptions={{
-                headerShown: false,
-            }}>
-                <Stack.Screen name="Overview" component={InitialScreen} />
+            <Stack.Navigator
+                initialRouteName="initial"
+                screenOptions={{
+                    headerShown: false,
+                }}>
+                <Stack.Screen name="initial" component={InitialScreen} />
+                <Stack.Screen name="register" component={RegisterScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     )
 }
-
-const styles = StyleSheet.create({
-    backButton: {
-        flexDirection: 'row',
-        paddingLeft: 20,
-    },
-    backButtonText: {
-        color: '#007AFF',
-        marginLeft: 4,
-    },
-})
