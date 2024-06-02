@@ -3,11 +3,20 @@ import { createStackNavigator } from '@react-navigation/stack'
 
 import InitialScreen from '../screens/initial'
 import RegisterScreen from '~/screens/register'
+import { firebaseApp } from 'utils/firebase'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import * as firebaseAuth from 'firebase/auth'
+
+const reactNativePersistence = (firebaseAuth as any).getReactNativePersistence
 
 export type RootStackParamList = {
     initial: undefined
     register: undefined
 }
+
+export const auth = firebaseAuth.initializeAuth(firebaseApp, {
+    persistence: reactNativePersistence(AsyncStorage),
+})
 
 const Stack = createStackNavigator<RootStackParamList>()
 

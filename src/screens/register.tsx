@@ -4,9 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
-
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { colorPalette } from 'utils/colors';
 import { RootStackParamList } from '~/navigation';
+import { firebaseApp } from 'utils/firebase';
 
 type RegisterScreenProps = StackNavigationProp<RootStackParamList, 'register'>;
 
@@ -39,6 +40,20 @@ export default function RegisterScreen() {
                 return;
             }
         }
+        const auth = getAuth(firebaseApp);
+        createUserWithEmailAndPassword(auth, formData.email, formData.password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                console.log(user);
+                Alert.alert('Conta criada', 'Sua conta foi criada com sucesso!');
+                navigation.pop();
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.error(errorCode, errorMessage);
+                Alert.alert('Erro ao criar conta', errorMessage);
+            });
     };
 
     return (
