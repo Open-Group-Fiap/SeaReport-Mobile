@@ -6,12 +6,14 @@ import RegisterScreen from '~/screens/register'
 import { firebaseApp } from 'utils/firebase'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as firebaseAuth from 'firebase/auth'
+import LoginScreen from '~/screens/login'
 
 const reactNativePersistence = (firebaseAuth as any).getReactNativePersistence
 
 export type RootStackParamList = {
     initial: undefined
     register: undefined
+    login: undefined
 }
 
 export const auth = firebaseAuth.initializeAuth(firebaseApp, {
@@ -30,6 +32,7 @@ export default function RootStack() {
                 }}>
                 <Stack.Screen name="initial" component={InitialScreen} />
                 <Stack.Screen name="register" component={RegisterScreen} />
+                <Stack.Screen name="login" component={LoginScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     )

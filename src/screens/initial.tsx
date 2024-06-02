@@ -1,15 +1,28 @@
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Button, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 import { RootStackParamList } from '../navigation'
 import { colorPalette } from 'utils/colors'
+import { getAuth } from 'firebase/auth'
+import { useEffect, useState } from 'react'
 
 type OverviewScreenNavigationProps = StackNavigationProp<RootStackParamList, 'initial'>
 
 export default function InitialScreen() {
     const navigation = useNavigation<OverviewScreenNavigationProps>()
-
+    const auth = getAuth()
+    const [isLogged, setIsLogged] = useState(false)
+    const user = auth.currentUser
+    useEffect(() => {
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                setIsLogged(true)
+            } else {
+                setIsLogged(false)
+            }
+        })
+    }, [])
     return (
         <View style={styles.container}>
             <View style={styles.main}>
@@ -18,18 +31,36 @@ export default function InitialScreen() {
                     <Text style={styles.title}>Sea Report</Text>
                     <Text style={styles.subtitle}>Seu aplicativo de denuncias maritimas.</Text>
                 </View>
-                <View style={styles.buttons}>
-                    <TouchableOpacity style={styles.loginButton}>
-                        <Text style={styles.loginText}>Login</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.registerButton}
-                        onPress={() => {
-                            navigation.push('register')
-                        }}>
-                        <Text style={styles.registerText}>Registrar</Text>
-                    </TouchableOpacity>
-                </View>
+                {isLogged && user && (
+                    <View>
+                        <Text style={{ color: '#fff' }}>Você está logado como {user.email}</Text>
+                        <TouchableOpacity
+                            style={styles.registerButton}
+                            onPress={() => {
+                                auth.signOut()
+                            }}>
+                            <Text style={styles.registerText}>Log Out</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+                {!isLogged && (
+                    <View style={styles.buttons}>
+                        <TouchableOpacity
+                            style={styles.loginButton}
+                            onPress={() => {
+                                navigation.push('login')
+                            }}>
+                            <Text style={styles.loginText}>Login</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.registerButton}
+                            onPress={() => {
+                                navigation.push('register')
+                            }}>
+                            <Text style={styles.registerText}>Registrar</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
             </View>
         </View>
     )
