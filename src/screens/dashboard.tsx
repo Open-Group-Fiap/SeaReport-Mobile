@@ -1,7 +1,14 @@
-import { Text } from "react-native";
+import { getAuth } from "firebase/auth";
+import { Button, Text, View } from "react-native";
 
-export default function DashBoardScreen(){
+export default function DashboardScreen() {
     return (
-        <Text>Dashboard</Text>
+        <View>
+            <Text>Dashboard</Text>
+            <Button title="Logout" onPress={() => {
+                const auth = getAuth()
+                auth.signOut()
+            }} />
+        </View>
     )
 }

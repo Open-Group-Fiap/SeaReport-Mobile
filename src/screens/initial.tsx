@@ -18,12 +18,14 @@ export default function InitialScreen() {
         auth.onAuthStateChanged((user) => {
             if (user) {
                 setIsLogged(true)
-                navigation.navigate('dashboard')
             } else {
                 setIsLogged(false)
             }
         })
     }, [auth, navigation])
+    useEffect(() => {
+        if (isLogged) navigation.push('home')
+    }, [isLogged, navigation])
     return (
         <View style={styles.container}>
             <View style={styles.main}>
@@ -35,13 +37,6 @@ export default function InitialScreen() {
                 {isLogged && user && (
                     <View>
                         <Text style={{ color: '#fff' }}>Você está logado como {user.email}</Text>
-                        <TouchableOpacity
-                            style={styles.registerButton}
-                            onPress={() => {
-                                auth.signOut()
-                            }}>
-                            <Text style={styles.registerText}>Log Out</Text>
-                        </TouchableOpacity>
                     </View>
                 )}
                 {!isLogged && (
