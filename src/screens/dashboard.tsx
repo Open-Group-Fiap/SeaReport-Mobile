@@ -1,9 +1,7 @@
-import { getAuth } from 'firebase/auth'
-import { Button, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import Markdown from 'react-native-markdown-display'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import ReportButton from '~/components/reportButton'
 const posts = [
     {
         id: 1,
@@ -56,16 +54,9 @@ const posts = [
 ]
 export default function DashboardScreen() {
     return (
-        <View style={{paddingTop: 30}}>
-            <Button
-                title="Logout"
-                onPress={() => {
-                    const auth = getAuth()
-                    auth.signOut()
-                }}
-            />
+        <View>
             <SafeAreaView>
-                <ScrollView contentInsetAdjustmentBehavior="automatic" style={{ height: '95%' }}>
+                <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollArea}>
                     {posts.map((post) => (
                         <View key={post.id} style={styles.post}>
                             <Markdown>{post.content}</Markdown>
@@ -78,6 +69,9 @@ export default function DashboardScreen() {
     )
 }
 const styles = StyleSheet.create({
+    scrollArea: {
+        height: '100%',
+    },
     post: {
         padding: 10,
         margin: 10,

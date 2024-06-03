@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import { getAuth } from "firebase/auth";
+import { Button, StyleSheet, Text, View } from "react-native";
 const user = {
     id: 1,
     username: "John Doe",
@@ -14,6 +15,14 @@ export default function UserScreen() {
             <Text style={styles.text}>Telefone: {user.phone}</Text>
             <Text style={styles.text}>Level: {level}</Text>
             <Text style={styles.text}>Xp: {user.xp} xp</Text>
+            <Button
+                title="Logout"
+                onPress={() => {
+                    const auth = getAuth()
+                    auth.signOut()
+                }}
+            />
+ 
         </View>
     )
 }
