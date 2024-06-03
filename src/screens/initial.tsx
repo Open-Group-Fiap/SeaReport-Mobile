@@ -18,11 +18,12 @@ export default function InitialScreen() {
         auth.onAuthStateChanged((user) => {
             if (user) {
                 setIsLogged(true)
+                navigation.navigate('dashboard')
             } else {
                 setIsLogged(false)
             }
         })
-    }, [])
+    }, [auth, navigation])
     return (
         <View style={styles.container}>
             <View style={styles.main}>
