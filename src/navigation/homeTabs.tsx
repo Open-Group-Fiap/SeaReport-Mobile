@@ -7,33 +7,9 @@ import { StackNavigationProp } from '@react-navigation/stack'
 import { StackScreenProps } from '@react-navigation/stack'
 import { useEffect } from 'react'
 import { getAuth } from 'firebase/auth'
-const posts = [
-    {
-        id: 1,
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-        date: new Date(),
-    },
-    {
-        id: 2,
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-        date: new Date(),
-    },
-    {
-        id: 3,
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-        date: new Date(),
-    },
-    {
-        id: 4,
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-        date: new Date(),
-    },
-    {
-        id: 5,
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-        date: new Date(),
-    },
-]
+import HomeIcon from 'assets/svgs/homeIcon'
+import { colorPalette } from 'utils/colors'
+
 const Tab = createBottomTabNavigator()
 type homeScreenProps = StackNavigationProp<RootStackParamList, 'home'>
 export default function HomeScreen() {
@@ -45,18 +21,24 @@ export default function HomeScreen() {
                 navigation.replace('initial')
             }
         })
-    })
+    }, [])
     return (
         <NavigationContainer independent={true}>
             <Tab.Navigator
                 screenOptions={({ route }) => {
                     return {
                         tabBarIcon: ({ focused }) => {
-                            let iconName
-                            if (route.name === 'dashboard') {
-                                iconName = focused ? '🏠' : '🏡'
-                            }
-                            return <Text style={{ fontSize: 24 }}>{iconName}</Text>
+                            if (route.name === 'dashboard') 
+                                return <HomeIcon color={'#fff'} />
+                            return <Text>Icon</Text>
+                        },
+                        tabBarLabel: () => {
+                            return <></>
+                        },
+                        tabBarStyle: {
+                            backgroundColor: colorPalette.main,
+                            paddingTop: 10,
+                            height: "8%",
                         },
                     }
                 }}>
