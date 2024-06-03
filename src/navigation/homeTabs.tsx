@@ -9,6 +9,8 @@ import { useEffect } from 'react'
 import { getAuth } from 'firebase/auth'
 import HomeIcon from 'assets/svgs/homeIcon'
 import { colorPalette } from 'utils/colors'
+import UserIcon from 'assets/svgs/userIcon'
+import UserScreen from '~/screens/user'
 
 const Tab = createBottomTabNavigator()
 type homeScreenProps = StackNavigationProp<RootStackParamList, 'home'>
@@ -30,6 +32,8 @@ export default function HomeScreen() {
                         tabBarIcon: ({ focused }) => {
                             if (route.name === 'dashboard') 
                                 return <HomeIcon color={'#fff'} />
+                            if (route.name === 'user')
+                                return <UserIcon color={'#fff'} />
                             return <Text>Icon</Text>
                         },
                         tabBarLabel: () => {
@@ -40,9 +44,11 @@ export default function HomeScreen() {
                             paddingTop: 10,
                             height: "8%",
                         },
+                        headerShown: false,
                     }
                 }}>
                 <Tab.Screen name="dashboard" component={DashboardScreen} />
+                <Tab.Screen name="user" component={UserScreen} />
             </Tab.Navigator>
         </NavigationContainer>
     )

@@ -3,6 +3,7 @@ import { Button, StyleSheet, Text, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import Markdown from 'react-native-markdown-display'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import ReportButton from '~/components/reportButton'
 const posts = [
     {
         id: 1,
@@ -55,8 +56,7 @@ const posts = [
 ]
 export default function DashboardScreen() {
     return (
-        <View>
-            <Text>Dashboard</Text>
+        <View style={{paddingTop: 30}}>
             <Button
                 title="Logout"
                 onPress={() => {
@@ -65,7 +65,7 @@ export default function DashboardScreen() {
                 }}
             />
             <SafeAreaView>
-                <ScrollView contentInsetAdjustmentBehavior="automatic" style={{ height: '92%' }}>
+                <ScrollView contentInsetAdjustmentBehavior="automatic" style={{ height: '95%' }}>
                     {posts.map((post) => (
                         <View key={post.id} style={styles.post}>
                             <Markdown>{post.content}</Markdown>
@@ -74,6 +74,7 @@ export default function DashboardScreen() {
                     ))}
                 </ScrollView>
             </SafeAreaView>
+            <ReportButton />
         </View>
     )
 }
