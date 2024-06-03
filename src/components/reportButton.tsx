@@ -12,7 +12,7 @@ export default function ReportButton() {
 const styles = StyleSheet.create({
     button: {
         position: 'absolute',
-        bottom: 20,
+        bottom: 85,
         right: 20,
         width: 50,
         height: 50,

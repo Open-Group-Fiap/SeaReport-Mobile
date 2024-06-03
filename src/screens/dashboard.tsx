@@ -74,7 +74,6 @@ export default function DashboardScreen() {
                     ))}
                 </ScrollView>
             </SafeAreaView>
-            <ReportButton />
         </View>
     )
 }

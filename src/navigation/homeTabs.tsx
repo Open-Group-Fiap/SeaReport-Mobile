@@ -11,6 +11,9 @@ import HomeIcon from 'assets/svgs/homeIcon'
 import { colorPalette } from 'utils/colors'
 import UserIcon from 'assets/svgs/userIcon'
 import UserScreen from '~/screens/user'
+import ReportsScreen from '~/screens/reports'
+import WaveIcon from 'assets/svgs/waveIcon'
+import ReportButton from '~/components/reportButton'
 
 const Tab = createBottomTabNavigator()
 type homeScreenProps = StackNavigationProp<RootStackParamList, 'home'>
@@ -34,6 +37,8 @@ export default function HomeScreen() {
                                 return <HomeIcon color={'#fff'} />
                             if (route.name === 'user')
                                 return <UserIcon color={'#fff'} />
+                            if (route.name === 'reports')
+                                return <WaveIcon color={'#fff'} />
                             return <Text>Icon</Text>
                         },
                         tabBarLabel: () => {
@@ -47,9 +52,11 @@ export default function HomeScreen() {
                         headerShown: false,
                     }
                 }}>
+                <Tab.Screen name="reports" component={ReportsScreen} />
                 <Tab.Screen name="dashboard" component={DashboardScreen} />
                 <Tab.Screen name="user" component={UserScreen} />
             </Tab.Navigator>
+            <ReportButton />
         </NavigationContainer>
     )
 }
