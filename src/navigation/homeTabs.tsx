@@ -26,19 +26,17 @@ export default function HomeScreen() {
                 navigation.replace('initial')
             }
         })
-    }, [])
+    }, [navigation])
     return (
         <NavigationContainer independent={true}>
             <Tab.Navigator
+                initialRouteName="dashboard"
                 screenOptions={({ route }) => {
                     return {
                         tabBarIcon: ({ focused }) => {
-                            if (route.name === 'dashboard') 
-                                return <HomeIcon color={'#fff'} />
-                            if (route.name === 'user')
-                                return <UserIcon color={'#fff'} />
-                            if (route.name === 'reports')
-                                return <WaveIcon color={'#fff'} />
+                            if (route.name === 'dashboard') return <HomeIcon color={'#fff'} />
+                            if (route.name === 'user') return <UserIcon color={'#fff'} />
+                            if (route.name === 'reports') return <WaveIcon color={'#fff'} />
                             return <Text>Icon</Text>
                         },
                         tabBarLabel: () => {
@@ -47,7 +45,7 @@ export default function HomeScreen() {
                         tabBarStyle: {
                             backgroundColor: colorPalette.main,
                             paddingTop: 10,
-                            height: "8%",
+                            height: '8%',
                         },
                         headerShown: false,
                     }
