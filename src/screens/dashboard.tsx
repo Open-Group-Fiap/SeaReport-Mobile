@@ -1,7 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { useState } from 'react'
+import { StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import Markdown from 'react-native-markdown-display'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import Post from '~/components/post'
 const posts = [
     {
         id: 1,
@@ -58,10 +60,7 @@ export default function DashboardScreen() {
             <SafeAreaView>
                 <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollArea}>
                     {posts.map((post) => (
-                        <View key={post.id} style={styles.post}>
-                            <Markdown>{post.content}</Markdown>
-                            <Text>Postado em: {post.date.toLocaleString()}</Text>
-                        </View>
+                        <Post key={post.id} post={post} />    
                     ))}
                 </ScrollView>
             </SafeAreaView>
@@ -72,10 +71,5 @@ const styles = StyleSheet.create({
     scrollArea: {
         height: '100%',
     },
-    post: {
-        padding: 10,
-        margin: 10,
-        backgroundColor: '#ccc',
-        borderRadius: 10,
-    },
+    
 })

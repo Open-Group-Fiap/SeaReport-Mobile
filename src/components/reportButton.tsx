@@ -3,19 +3,50 @@ import { Button, Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler'
 import { colorPalette } from 'utils/colors'
 
+const categories = new Map([
+    ['Despejo de lixo', 'Despejo de lixo'],
+    ['Derramento de óleo', 'Derramento de óleo'],
+    ['Pesca ilegal', 'Pesca ilegal'],
+    ['Pesca predatória', 'Pesca predatória'],
+    ['Outro(s)', 'Outro(s)'],
+])
+
 export default function ReportButton() {
     const [modal, setModal] = useState(false)
+    const [selectedCategory, setSelectedCategory] = useState('')
     return (
         <TouchableOpacity style={styles.button}>
             <Modal animationType="slide" visible={modal} onRequestClose={() => setModal(false)}>
                 <View style={styles.modal}>
                     <View style={styles.modalMainContainer}>
+                        <Text style={styles.modalText}>Selecione a categoria</Text>
                         <Text style={styles.modalText}>Denunciar</Text>
                         <TextInput
                             placeholder="Descrição"
                             style={styles.modalInput}
                             multiline={true}
                         />
+                        <View style={styles.modalCategoryContainer}>
+                            {Array.from(categories).map(([key, value]) => (
+                                
+                                <Pressable
+                                    key={key}
+                                    onPress={() => setSelectedCategory(key)}
+                                    style={[
+                                        styles.modalCategory,
+                                        selectedCategory === key && styles.modalCategorySelected,
+                                    ]}>
+                                    <Text
+                                        style={[
+                                            styles.modalCategoryText,
+                                            selectedCategory === key &&
+                                            styles.modalCategoryTextSelected,
+                                        ]}>
+                                        {value}
+                                    </Text>
+                                </Pressable>
+                            ))}
+                        </View>
                         <Pressable onPress={() => setModal(false)} style={styles.modalButton}>
                             <Text style={styles.modalButtonText}>Enviar</Text>
                         </Pressable>
@@ -59,6 +90,29 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         margin: 10,
         padding: 10,
+    },
+    modalCategoryContainer: {
+        width: '90%',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+    },
+    modalCategory: {
+        backgroundColor: '#fff',
+        width: '35%',
+        borderRadius: 5,
+        margin: 10,
+        padding: 10,
+    },
+    modalCategoryText: {
+        color: '#000',
+        fontSize: 16,
+    },
+    modalCategorySelected: {
+        backgroundColor: colorPalette.darker,
+    },
+    modalCategoryTextSelected: {
+        color: '#fff',
     },
     modalButton: {
         backgroundColor: colorPalette.darker,
