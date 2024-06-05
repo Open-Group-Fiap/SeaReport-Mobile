@@ -1,67 +1,34 @@
-import { useState } from 'react'
-import { StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native'
+import { useEffect, useState } from 'react'
+import { StyleSheet, Text, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
-import Markdown from 'react-native-markdown-display'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { apiUrl } from 'utils/api'
 import Post from '~/components/post'
-const posts = [
-    {
-        id: 1,
-        content: `# Lorem ipsum 
-        dolor sit amet, consectetur adipiscing elit`,
-        date: new Date(),
-    },
-    {
-        id: 2,
-        content: `# Lorem ipsum 
-        dolor sit amet, consectetur adipiscing elit`,
-        date: new Date(),
-    },
-    {
-        id: 3,
-        content: `# Lorem ipsum
-        dolor sit amet, consectetur adipiscing elit`,
-        date: new Date(),
-    },
-    {
-        id: 4,
-        content: `# Lorem ipsum 
-        dolor sit amet, consectetur adipiscing elit`,
-        date: new Date(),
-    },
-    {
-        id: 5,
-        content: `# Lorem ipsum 
-        dolor sit amet, consectetur adipiscing elit`,
-        date: new Date(),
-    },
-    {
-        id: 6,
-        content: `# Lorem ipsum 
-        dolor sit amet, consectetur adipiscing elit`,
-        date: new Date(),
-    },
-    {
-        id: 7,
-        content: `# Lorem ipsum 
-        dolor sit amet, consectetur adipiscing elit`,
-        date: new Date(),
-    },
-    {
-        id: 8,
-        content: `# Lorem ipsum 
-        dolor sit amet, consectetur adipiscing elit`,
-        date: new Date(),
-    },
-]
+type TPost = {
+    id: number
+    contentPost: string
+    date: Date
+}
 export default function DashboardScreen() {
+    const [posts, setPosts] = useState<TPost[]>([])
+    useEffect(() => {
+        fetch(`${apiUrl}/post`)
+        
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data)
+                setPosts(data)
+            })
+    }, [])
     return (
         <View>
             <SafeAreaView>
                 <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollArea}>
-                    {posts.map((post) => (
-                        <Post key={post.id} post={post} />    
-                    ))}
+                    {posts.length > 0 ? (
+                        posts.map((post) => <Post key={post.id} post={post} />)
+                    ) : (
+                        <Text>Carregando...</Text>
+                    )}
                 </ScrollView>
             </SafeAreaView>
         </View>
@@ -71,5 +38,4 @@ const styles = StyleSheet.create({
     scrollArea: {
         height: '100%',
     },
-    
 })

@@ -4,11 +4,12 @@ import { TextInput, TouchableOpacity } from 'react-native-gesture-handler'
 import { colorPalette } from 'utils/colors'
 
 const categories = new Map([
-    ['Despejo de lixo', 'Despejo de lixo'],
-    ['Derramento de óleo', 'Derramento de óleo'],
-    ['Pesca ilegal', 'Pesca ilegal'],
-    ['Pesca predatória', 'Pesca predatória'],
-    ['Outro(s)', 'Outro(s)'],
+    [1, 'Despejo de lixo'],
+    [2, 'Derramento de óleo'],
+    [3, 'Pesca ilegal'],
+    [4, 'Pesca predatória'],
+    [5, 'Outro(s)'],
+    [6, 'Pirataria'],
 ])
 
 export default function ReportButton() {
@@ -28,18 +29,18 @@ export default function ReportButton() {
                         />
                         <View style={styles.modalCategoryContainer}>
                             {Array.from(categories).map(([key, value]) => (
-                                
                                 <Pressable
                                     key={key}
-                                    onPress={() => setSelectedCategory(key)}
+                                    onPress={() => setSelectedCategory(value)}
                                     style={[
                                         styles.modalCategory,
-                                        selectedCategory === key && styles.modalCategorySelected,
+                                        selectedCategory === value
+                                        && styles.modalCategorySelected,
                                     ]}>
                                     <Text
                                         style={[
                                             styles.modalCategoryText,
-                                            selectedCategory === key &&
+                                            selectedCategory === value &&
                                             styles.modalCategoryTextSelected,
                                         ]}>
                                         {value}

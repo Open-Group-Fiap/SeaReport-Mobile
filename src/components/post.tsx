@@ -5,12 +5,12 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import Markdown from 'react-native-markdown-display'
 import { colorPalette } from 'utils/colors'
 
-export default function Post({ post }: { post: { id: number; content: string; date: Date } }) {
+export default function Post({ post }: { post: { id: number; contentPost: string; date: Date } }) {
     const [liked, setLiked] = useState(false)
     return (
         <View>
             <View key={post.id} style={styles.post}>
-                <Markdown>{post.content}</Markdown>
+                <Markdown>{post.contentPost}</Markdown>
                 <Text>Postado em: {post.date.toLocaleString()}</Text>
                 <View style={styles.likeButtonContainer}>
                     <TouchableOpacity

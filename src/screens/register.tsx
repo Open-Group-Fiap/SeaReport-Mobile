@@ -53,10 +53,10 @@ export default function RegisterScreen() {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        user_name: formData.name,
-                        phone: formData.phone,
+                        username: formData.name,
+                        phoneNumber: formData.phone,
                         auth: {
-                            id_auth: user.uid,
+                            id: user.uid,
                             email: user.email,
                         },
                     }),
