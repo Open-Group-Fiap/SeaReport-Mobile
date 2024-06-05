@@ -1,46 +1,55 @@
+import { useEffect, useState } from 'react'
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { colorPalette } from 'utils/colors'
-import ReportButton from '~/components/reportButton'
 
-const reports = [
-    {
-        id: 1,
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-        date: new Date(),
-        approved: true,
-        latitude: 0,
-        longitude: 0,
-    },
-    {
-        id: 2,
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-        date: new Date(),
-        approved: false,
-        latitude: 0,
-        longitude: 0,
-    },
-]
+type TReport = {
+    id: number
+    description: string
+    dateReport: Date
+    category: number
+    approved: boolean
+    location: {
+        latitude: number
+        longitude: number
+    }
+}
 
 export default function ReportsScreen() {
+    const [reports, setReports] = useState<TReport[]>([])
+    useEffect(() => {
+        fetch('https://api.example.com/report')
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data)
+                setReports(data)
+            })
+    }, [])
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Denuncias</Text>
             <SafeAreaView>
                 <ScrollView>
-                    {reports.map((report) => (
-                        <View key={report.id} style={styles.reportsContainer}>
-                            <Text style={styles.text}>
-                                Denuncia feita em: {report.date.toLocaleString()}
-                            </Text>
-                            <Text style={styles.text}>
-                                Status:{' '} 
-                                <Text style={[report.approved ? styles.approved : styles.pending]}>
-                                    {report.approved ? 'Aprovado' : 'Pendente'}{' '}
+                    {reports.length > 0 ? (
+                        reports.map((report) => (
+                            <View key={report.id} style={styles.reportsContainer}>
+                                <Text style={styles.text}>
+                                    Denuncia feita em: {report.dateReport.toLocaleString()}
                                 </Text>
-                            </Text>
-                        </View>
-                    ))}
+                                <Text style={styles.text}>
+                                    Status:{' '}
+                                    <Text
+                                        style={[
+                                            report.approved ? styles.approved : styles.pending,
+                                        ]}>
+                                        {report.approved ? 'Aprovado' : 'Pendente'}{' '}
+                                    </Text>
+                                </Text>
+                            </View>
+                        ))
+                    ) : (
+                        <Text>Sem denuncias!</Text>
+                    )}
                 </ScrollView>
             </SafeAreaView>
         </View>

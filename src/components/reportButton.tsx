@@ -1,16 +1,9 @@
 import { useState } from 'react'
 import { Button, Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler'
+import { categories } from 'utils/categories'
 import { colorPalette } from 'utils/colors'
 
-const categories = new Map([
-    [1, 'Despejo de lixo'],
-    [2, 'Derramento de óleo'],
-    [3, 'Pesca ilegal'],
-    [4, 'Pesca predatória'],
-    [5, 'Outro(s)'],
-    [6, 'Pirataria'],
-])
 
 export default function ReportButton() {
     const [modal, setModal] = useState(false)
