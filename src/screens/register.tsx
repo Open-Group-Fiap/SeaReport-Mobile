@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { AntDesign } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
@@ -6,13 +6,14 @@ import { Alert, StyleSheet, Text, View } from 'react-native'
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler'
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 import { colorPalette } from 'utils/colors'
-import { RootStackParamList } from '~/navigation'
+import { RootStackParamList, userContext } from '~/navigation'
 import { firebaseApp } from 'utils/firebase'
 import { apiUrl } from 'utils/api'
 
 type RegisterScreenProps = StackNavigationProp<RootStackParamList, 'register'>
 
 export default function RegisterScreen() {
+    const [user, setUser] = useContext(userContext)!
     const navigation = useNavigation<RegisterScreenProps>()
     const [formData, setFormData] = useState({
         name: '',
@@ -61,11 +62,16 @@ export default function RegisterScreen() {
                         },
                     }),
                 })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        console.log(data)
+                        setUser(data)
+                        navigation.pop()
+                    })
                     .catch((error) => {
                         console.error(error)
                         Alert.alert('Erro ao criar conta', 'Erro ao criar conta no servidor')
                     })
-                    .then(() => navigation.pop())
             })
             .catch((error) => {
                 const errorCode = error.code

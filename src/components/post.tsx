@@ -17,7 +17,11 @@ export default function Post({ post }: { post: { id: number; contentPost: string
                         onPress={() => {
                             setLiked(!liked)
                         }}>
-                        <AntDesign name={liked ? 'heart' : 'hearto'} size={24} color={colorPalette.main} />
+                        <AntDesign
+                            name={liked ? 'heart' : 'hearto'}
+                            size={24}
+                            color={colorPalette.main}
+                        />
                     </TouchableOpacity>
                 </View>
             </View>
