@@ -1,60 +1,79 @@
-import React, { useState } from 'react';
-import { AntDesign } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { Alert, StyleSheet, Text, View } from 'react-native';
-import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { colorPalette } from 'utils/colors';
-import { RootStackParamList } from '~/navigation';
-import { firebaseApp } from 'utils/firebase';
+import React, { useState } from 'react'
+import { AntDesign } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
+import { StackNavigationProp } from '@react-navigation/stack'
+import { Alert, StyleSheet, Text, View } from 'react-native'
+import { TextInput, TouchableOpacity } from 'react-native-gesture-handler'
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { colorPalette } from 'utils/colors'
+import { RootStackParamList } from '~/navigation'
+import { firebaseApp } from 'utils/firebase'
+import { apiUrl } from 'utils/api'
 
-type RegisterScreenProps = StackNavigationProp<RootStackParamList, 'register'>;
+type RegisterScreenProps = StackNavigationProp<RootStackParamList, 'register'>
 
 export default function RegisterScreen() {
-    const navigation = useNavigation<RegisterScreenProps>();
+    const navigation = useNavigation<RegisterScreenProps>()
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         phone: '',
         password: '',
         confirmPassword: '',
-    });
+    })
 
     const handleChange = (key: string, value: string) => {
-        setFormData({ ...formData, [key]: value });
-    };
+        setFormData({ ...formData, [key]: value })
+    }
     const submit = () => {
-        console.log(formData);
+        console.log(formData)
         if (formData.password !== formData.confirmPassword) {
-            Alert.alert('Erro ao criar conta', 'As senhas não coincidem');
-            return;
+            Alert.alert('Erro ao criar conta', 'As senhas não coincidem')
+            return
         }
         if (formData.password.length < 6) {
-            Alert.alert('Erro ao criar conta', 'A senha deve ter pelo menos 6 caracteres');
-            return;
+            Alert.alert('Erro ao criar conta', 'A senha deve ter pelo menos 6 caracteres')
+            return
         }
         for (const key in formData) {
             if (formData[key as keyof typeof formData] === '') {
-                Alert.alert('Erro ao criar conta', 'Preencha todos os campos');
-                return;
+                Alert.alert('Erro ao criar conta', 'Preencha todos os campos')
+                return
             }
         }
-        const auth = getAuth(firebaseApp);
+        const auth = getAuth(firebaseApp)
         createUserWithEmailAndPassword(auth, formData.email, formData.password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                console.log(user);
-                Alert.alert('Conta criada', 'Sua conta foi criada com sucesso!');
-                navigation.pop();
+            .then(async (userCredential) => {
+                const user = userCredential.user
+                console.log(user)
+                Alert.alert('Conta criada', 'Sua conta foi criada com sucesso!')
+                fetch(`${apiUrl}/user`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_name: formData.name,
+                        phone: formData.phone,
+                        auth: {
+                            id_auth: user.uid,
+                            email: user.email,
+                        },
+                    }),
+                })
+                    .catch((error) => {
+                        console.error(error)
+                        Alert.alert('Erro ao criar conta', 'Erro ao criar conta no servidor')
+                    })
+                    .then(() => navigation.pop())
             })
             .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.error(errorCode, errorMessage);
-                Alert.alert('Erro ao criar conta', errorMessage);
-            });
-    };
+                const errorCode = error.code
+                const errorMessage = error.message
+                console.error(errorCode, errorMessage)
+                Alert.alert('Erro ao criar conta', errorMessage)
+            })
+    }
 
     return (
         <View style={styles.main}>
@@ -105,7 +124,7 @@ export default function RegisterScreen() {
                 </TouchableOpacity>
             </View>
         </View>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
@@ -141,5 +160,4 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         textAlign: 'center',
     },
-});
-
+})
