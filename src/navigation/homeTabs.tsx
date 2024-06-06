@@ -45,7 +45,8 @@ export default function HomeScreen() {
                         tabBarStyle: {
                             backgroundColor: colorPalette.main,
                             paddingTop: 10,
-                            height: '8%',
+                            paddingBottom: 10,
+                            height: '9%',
                         },
                         headerShown: false,
                     }

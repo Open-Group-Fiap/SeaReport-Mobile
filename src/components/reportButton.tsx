@@ -1,17 +1,78 @@
-import { useState } from 'react'
-import { Button, Modal, Pressable, StyleSheet, Text, View } from 'react-native'
+import { useContext, useEffect, useState } from 'react'
+import { Alert, Button, Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler'
 import { categories } from 'utils/categories'
 import { colorPalette } from 'utils/colors'
-
+import * as Location from 'expo-location'
+import { apiUrl } from 'utils/api'
+import { userContext } from 'utils/context'
 
 export default function ReportButton() {
     const [modal, setModal] = useState(false)
     const [selectedCategory, setSelectedCategory] = useState('')
+    const [description, setDescription] = useState('')
+    const { user } = useContext(userContext)!
+    const [locationInfo, setLocationInfo] = useState({ permission: false, msg: '' })
+    const submit = async () => {
+        console.log('a')
+        if (!locationInfo.permission) {
+            Alert.alert('Erro ao enviar', 'Permissão de localização negada')
+            return
+        }
+        if (selectedCategory === '') {
+            Alert.alert('Erro ao enviar', 'Selecione uma categoria')
+            return
+        }
+        if (description === '') {
+            Alert.alert('Erro ao enviar', 'Preencha a descrição')
+            return
+        }
+        if (!user) {
+            Alert.alert('Erro ao enviar', 'Usuário não logado')
+            return
+        }
+        const location = await Location.getCurrentPositionAsync()
+        const response = await fetch(`${apiUrl}/report`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                category: categories.get(selectedCategory),
+                location: {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                },
+                description,
+                userId: user.id,
+            }),
+        })
+        if (response.status === 201) {
+            Alert.alert('Denúncia enviada', 'Sua denúncia foi enviada com sucesso')
+            setModal(false)
+        }
+    }
+
+    useEffect(() => {
+        const effect = async () => {
+            const { status } = await Location.requestForegroundPermissionsAsync()
+            if (status !== 'granted') {
+                setLocationInfo({ permission: false, msg: 'Permissão negada' })
+            } else {
+                setLocationInfo({ permission: true, msg: '' })
+            }
+        }
+        if (modal) effect()
+        else {
+            setDescription('')
+            setSelectedCategory('')
+        }
+    }, [modal])
     return (
         <TouchableOpacity style={styles.button}>
             <Modal animationType="slide" visible={modal} onRequestClose={() => setModal(false)}>
                 <View style={styles.modal}>
+                    {!locationInfo.permission ? <Text>{locationInfo.msg}</Text> : null}
                     <View style={styles.modalMainContainer}>
                         <Text style={styles.modalText}>Selecione a categoria</Text>
                         <Text style={styles.modalText}>Denunciar</Text>
@@ -19,30 +80,33 @@ export default function ReportButton() {
                             placeholder="Descrição"
                             style={styles.modalInput}
                             multiline={true}
+                            value={description}
+                            onChangeText={(text) => setDescription(text)}
                         />
                         <View style={styles.modalCategoryContainer}>
                             {Array.from(categories).map(([key, value]) => (
                                 <Pressable
                                     key={key}
-                                    onPress={() => setSelectedCategory(value)}
+                                    onPress={() => setSelectedCategory(key)}
                                     style={[
                                         styles.modalCategory,
-                                        selectedCategory === value
-                                        && styles.modalCategorySelected,
+                                        selectedCategory === key && styles.modalCategorySelected,
                                     ]}>
                                     <Text
                                         style={[
                                             styles.modalCategoryText,
-                                            selectedCategory === value &&
+                                            selectedCategory === key &&
                                             styles.modalCategoryTextSelected,
                                         ]}>
-                                        {value}
+                                        {key}
                                     </Text>
                                 </Pressable>
                             ))}
                         </View>
-                        <Pressable onPress={() => setModal(false)} style={styles.modalButton}>
-                            <Text style={styles.modalButtonText}>Enviar</Text>
+                        <Pressable onPress={submit} style={styles.modalButton}>
+                            <Text style={styles.modalButtonText}>
+                                {locationInfo.permission ? 'Enviar' : 'Sem localização'}
+                            </Text>
                         </Pressable>
                     </View>
                     <Pressable onPress={() => setModal(false)}>

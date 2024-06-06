@@ -1,8 +1,8 @@
 export const categories = new Map([
-    [1, 'Despejo de lixo'],
-    [2, 'Derramento de óleo'],
-    [3, 'Pesca ilegal'],
-    [4, 'Pesca predatória'],
-    [5, 'Outro(s)'],
-    [6, 'Pirataria'],
+    ['Despejo de lixo', 1],
+    ['Derramento de óleo', 2],
+    ['Pesca ilegal', 3],
+    ['Pesca predatória', 4],
+    ['Outro(s)', 5],
+    ['Pirataria', 6],
 ])

@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
+import { apiUrl } from 'utils/api'
 import { colorPalette } from 'utils/colors'
+import { userContext } from 'utils/context'
 
 type TReport = {
     id: number
@@ -17,12 +19,13 @@ type TReport = {
 
 export default function ReportsScreen() {
     const [reports, setReports] = useState<TReport[]>([])
+    const {user} = useContext(userContext)!
     useEffect(() => {
-        fetch('https://api.example.com/report')
+        if(!user) return
+        fetch(`${apiUrl}/report/user/${user.id}`)
             .then((response) => response.json())
             .then((data) => {
-                console.log(data)
-                setReports(data)
+                setReports(data.content)
             })
     }, [])
     return (
@@ -34,7 +37,7 @@ export default function ReportsScreen() {
                         reports.map((report) => (
                             <View key={report.id} style={styles.reportsContainer}>
                                 <Text style={styles.text}>
-                                    Denuncia feita em: {report.dateReport.toLocaleString()}
+                                    Denuncia feita em: {new Date(report.dateReport).toLocaleString()}
                                 </Text>
                                 <Text style={styles.text}>
                                     Status:{' '}
@@ -57,7 +60,7 @@ export default function ReportsScreen() {
 }
 const styles = StyleSheet.create({
     container: {
-        paddingTop: 30,
+        paddingTop: 50,
         height: '100%',
     },
     title: {
