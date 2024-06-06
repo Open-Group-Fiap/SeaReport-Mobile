@@ -15,6 +15,7 @@ type LoginScreenProps = StackNavigationProp<RootStackParamList, 'login'>
 
 export default function LoginScreen() {
     const navigation = useNavigation<LoginScreenProps>()
+    const [msg, setMsg] = useState('')
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -32,7 +33,30 @@ export default function LoginScreen() {
             }
         }
         const auth = getAuth(firebaseApp)
-        const user = await signInWithEmailAndPassword(auth, formData.email.trim(), formData.password)
+        const user = await signInWithEmailAndPassword(
+            auth,
+            formData.email.trim(),
+            formData.password
+        ).catch((error) => {
+            if (error.code === 'auth/wrong-password') {
+                setMsg('Senha inválida')
+            } else if (error.code === 'auth/user-not-found') {
+                setMsg('Email inválido')
+            } else if (error.code === 'auth/invalid-email') {
+                setMsg('Email inválido')
+            } else if (error.code === 'auth/network-request-failed') {
+                setMsg('Erro de rede')
+            } else if (error.code === 'auth/operation-not-allowed') {
+                setMsg('Email inválido')
+            } else if (error.code === 'auth/user-disabled') {
+                setMsg('Email inválido')
+            } else if (error.code === 'auth/invalid-credential') {
+                setMsg('Email inválido')
+            } else setMsg(error.message)
+        })
+        if (!user) {
+            return
+        }
         if (user.user.email) {
             console.log(
                 `${apiUrl}/user/auth`,
@@ -65,6 +89,7 @@ export default function LoginScreen() {
             </TouchableOpacity>
             <View style={styles.form}>
                 <Text style={styles.formHeader}>Digite suas informações: </Text>
+                {msg && <Text style={styles.formMsg}>{msg}</Text>}
                 <TextInput
                     style={styles.formInput}
                     placeholder="Email"
@@ -90,11 +115,16 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
     main: {
-        paddingTop: 32,
+        paddingTop: 42,
     },
     form: {
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    formMsg: {
+        color: 'red',
+        fontSize: 16,
+        marginBottom: 16,
     },
     formHeader: {
         fontSize: 24,

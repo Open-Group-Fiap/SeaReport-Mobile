@@ -16,6 +16,7 @@ type RegisterScreenProps = StackNavigationProp<RootStackParamList, 'register'>
 export default function RegisterScreen() {
     const { user, setUser } = useContext(userContext)!
     const navigation = useNavigation<RegisterScreenProps>()
+    const [msg, setMsg] = useState('')
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -29,19 +30,19 @@ export default function RegisterScreen() {
     }
     const submit = async () => {
         console.log(formData)
+        for (const key in formData) {
+            if (formData[key as keyof typeof formData] === '') {
+                setMsg('Preencha todos o campos')
+                return
+            }
+        }
         if (formData.password !== formData.confirmPassword) {
-            Alert.alert('Erro ao criar conta', 'As senhas não coincidem')
+            setMsg('As senhas não coincidem')
             return
         }
         if (formData.password.length < 6) {
-            Alert.alert('Erro ao criar conta', 'A senha deve ter pelo menos 6 caracteres')
+            setMsg('A senha deve ter pelo menos 6 caracteres')
             return
-        }
-        for (const key in formData) {
-            if (formData[key as keyof typeof formData] === '') {
-                Alert.alert('Erro ao criar conta', 'Preencha todos os campos')
-                return
-            }
         }
         const auth = getAuth(firebaseApp)
         const userCredential = await createUserWithEmailAndPassword(
@@ -51,22 +52,33 @@ export default function RegisterScreen() {
         ).catch((error) => {
             const errorCode = error.code
             const errorMessage = error.message
-            console.error(errorCode, errorMessage)
-            Alert.alert('Erro ao criar conta', errorMessage)
+            console.log(errorCode, errorMessage)
+            switch (errorCode) {
+                case 'auth/email-already-in-use':
+                    setMsg('Email já existe')
+                    break
+                case 'auth/invalid-email':
+                    setMsg('Email inválido')
+                    break
+                case 'auth/network-request-failed':
+                    setMsg('Erro de rede')
+                    break
+                case 'auth/operation-not-allowed':
+                    setMsg('Email inválido')
+                    break
+                case 'auth/user-disabled':
+                    setMsg('Email inválido')
+                    break
+                case 'auth/invalid-credential':
+                    setMsg('Email inválido')
+                    break
+                default:
+                    setMsg(errorMessage)
+            }
+            return
         })
         if (!userCredential) return
         const user = userCredential.user
-        console.log(`${apiUrl}/user`)
-        console.log(user)
-        console.log(
-            JSON.stringify({
-                username: formData.name.trim(),
-                phoneNumber: formData.phone.trim(),
-                auth: { id: user.uid, email: user.email },
-            })
-        )
-        const a = await fetch(`${apiUrl}/user`)
-        console.log(await a.json())
         await fetch(`${apiUrl}/user`, {
             method: 'POST',
             headers: {
@@ -89,10 +101,9 @@ export default function RegisterScreen() {
                 navigation.pop()
             })
             .catch((error) => {
-                console.error(error)
-                Alert.alert('Erro ao criar conta', 'Erro ao criar conta no servidor')
+                console.log(error)
+                setMsg('Erro ao criar conta no servidor')
             })
-        console.log('user', user)
     }
 
     return (
@@ -102,6 +113,7 @@ export default function RegisterScreen() {
             </TouchableOpacity>
             <View style={styles.form}>
                 <Text style={styles.formHeader}>Digite suas informações: </Text>
+                {msg && <Text style={styles.formMsg}>{msg}</Text>}
                 <TextInput
                     style={styles.formInput}
                     placeholder="Nome"
@@ -149,7 +161,7 @@ export default function RegisterScreen() {
 
 const styles = StyleSheet.create({
     main: {
-        paddingTop: 32,
+        paddingTop: 42,
     },
     form: {
         alignItems: 'center',
@@ -158,6 +170,11 @@ const styles = StyleSheet.create({
     formHeader: {
         fontSize: 24,
         fontWeight: '600',
+        marginBottom: 16,
+    },
+    formMsg: {
+        color: 'red',
+        fontSize: 16,
         marginBottom: 16,
     },
     formInput: {

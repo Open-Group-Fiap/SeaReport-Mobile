@@ -18,7 +18,8 @@ export default function InitialScreen() {
     const auth = getAuth(firebaseApp)
     useEffect(() => {
         auth.onAuthStateChanged(async (user) => {
-            if (user) {
+            if (user && user.email) {
+                console.log(user)
                 const userRequest = await fetch(`${apiUrl}/user/auth`, {
                     method: 'POST',
                     headers: {
@@ -28,19 +29,21 @@ export default function InitialScreen() {
                         id: user.uid,
                         email: user.email,
                     }),
+                }).catch((err) => {
+                    console.error(err)
                 })
-                    .catch((err) => {
-                        console.error(err)
-                    })
                 if (userRequest) {
-                    const dataUser = await userRequest.json()
-                    setUser(dataUser)
+                    const dataUserText = await userRequest.text()
+                    try {
+                        const dataUser = JSON.parse(dataUserText)
+                        setUser(dataUser)
+                    } catch (err) {
+                        auth.signOut()
+                    }
                 }
-            }
-            else {
+            } else {
                 setUser(null)
             }
-
         })
     }, [])
     useEffect(() => {
