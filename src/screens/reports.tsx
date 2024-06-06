@@ -19,13 +19,22 @@ type TReport = {
 
 export default function ReportsScreen() {
     const [reports, setReports] = useState<TReport[]>([])
-    const {user} = useContext(userContext)!
+    const { user } = useContext(userContext)!
     useEffect(() => {
-        if(!user) return
+        if (!user) return
         fetch(`${apiUrl}/report/user/${user.id}`)
-            .then((response) => response.json())
+            .then((response) => {
+                if (!response.ok) {
+                    return {content: []}
+                }
+                return response.json()
+            })
             .then((data) => {
-                setReports(data.content)
+                if (data.content.length > 0) {
+                    setReports(data.content)
+                }
+            }).catch((error) => {
+                console.error(error)
             })
     }, [])
     return (
@@ -37,7 +46,8 @@ export default function ReportsScreen() {
                         reports.map((report) => (
                             <View key={report.id} style={styles.reportsContainer}>
                                 <Text style={styles.text}>
-                                    Denuncia feita em: {new Date(report.dateReport).toLocaleString()}
+                                    Denuncia feita em:{' '}
+                                    {new Date(report.dateReport).toLocaleString()}
                                 </Text>
                                 <Text style={styles.text}>
                                     Status:{' '}

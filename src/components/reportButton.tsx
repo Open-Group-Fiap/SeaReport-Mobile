@@ -9,13 +9,14 @@ import { userContext } from 'utils/context'
 
 export default function ReportButton() {
     const [modal, setModal] = useState(false)
+    const { user, setUser } = useContext(userContext)!
     const [selectedCategory, setSelectedCategory] = useState('')
     const [description, setDescription] = useState('')
-    const { user } = useContext(userContext)!
     const [locationInfo, setLocationInfo] = useState({ permission: false, msg: '' })
     const submit = async () => {
         console.log('a')
         if (!locationInfo.permission) {
+            Location.requestForegroundPermissionsAsync()
             Alert.alert('Erro ao enviar', 'Permissão de localização negada')
             return
         }
@@ -49,6 +50,7 @@ export default function ReportButton() {
         })
         if (response.status === 201) {
             Alert.alert('Denúncia enviada', 'Sua denúncia foi enviada com sucesso')
+            setUser({ ...user, xp: user.xp + 50 })
             setModal(false)
         }
     }
@@ -57,7 +59,7 @@ export default function ReportButton() {
         const effect = async () => {
             const { status } = await Location.requestForegroundPermissionsAsync()
             if (status !== 'granted') {
-                setLocationInfo({ permission: false, msg: 'Permissão negada' })
+                setLocationInfo({ permission: false, msg: 'Permissão de localização negada' })
             } else {
                 setLocationInfo({ permission: true, msg: '' })
             }

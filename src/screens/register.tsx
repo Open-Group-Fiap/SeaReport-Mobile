@@ -46,7 +46,7 @@ export default function RegisterScreen() {
         const auth = getAuth(firebaseApp)
         const userCredential = await createUserWithEmailAndPassword(
             auth,
-            formData.email,
+            formData.email.toLowerCase().trim(),
             formData.password
         ).catch((error) => {
             const errorCode = error.code
@@ -60,8 +60,8 @@ export default function RegisterScreen() {
         console.log(user)
         console.log(
             JSON.stringify({
-                username: formData.name,
-                phoneNumber: formData.phone,
+                username: formData.name.trim(),
+                phoneNumber: formData.phone.trim(),
                 auth: { id: user.uid, email: user.email },
             })
         )
