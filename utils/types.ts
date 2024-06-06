@@ -1,7 +1,8 @@
 type TUser ={
     id: number
-    name: string
+    username: string
     phone: string
+    xp: number
     auth: {
         id: string
         email: string
