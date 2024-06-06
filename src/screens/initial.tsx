@@ -6,17 +6,40 @@ import { RootStackParamList } from '../navigation'
 import { colorPalette } from 'utils/colors'
 import { useContext, useEffect, useState } from 'react'
 import { userContext } from 'utils/context'
+import { getAuth } from 'firebase/auth'
+import { firebaseApp } from 'utils/firebase'
+import { apiUrl } from 'utils/api'
 
 type OverviewScreenNavigationProps = StackNavigationProp<RootStackParamList, 'initial'>
 
 export default function InitialScreen() {
     const navigation = useNavigation<OverviewScreenNavigationProps>()
-    const user = useContext(userContext)?.user
+    const { user, setUser } = useContext(userContext)!
+    const auth = getAuth(firebaseApp)
+    useEffect(() => {
+        if (auth.currentUser) {
+            fetch(`${apiUrl}/user/auth`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: auth.currentUser.uid,
+                    email: auth.currentUser.email,
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data)
+                    setUser(data)
+                })
+        }
+    }, [])
     useEffect(() => {
         if (user) {
             navigation.push('home')
         }
-    }, [user, navigation])
+    }, [user])
     return (
         <View style={styles.container}>
             <View style={styles.main}>
@@ -27,7 +50,9 @@ export default function InitialScreen() {
                 </View>
                 {user ? (
                     <View>
-                        <Text style={{ color: '#fff' }}>Você está logado como {user.auth.email}</Text>
+                        <Text style={{ color: '#fff' }}>
+                            Você está logado como {user.auth.email}
+                        </Text>
                     </View>
                 ) : (
                     <View style={styles.buttons}>
