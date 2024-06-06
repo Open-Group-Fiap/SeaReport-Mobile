@@ -17,23 +17,28 @@ export default function InitialScreen() {
     const { user, setUser } = useContext(userContext)!
     const auth = getAuth(firebaseApp)
     useEffect(() => {
-        if (auth.currentUser) {
-            fetch(`${apiUrl}/user/auth`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id: auth.currentUser.uid,
-                    email: auth.currentUser.email,
-                }),
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    console.log(data)
-                    setUser(data)
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const userRequest = await fetch(`${apiUrl}/user/auth`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: user.uid,
+                        email: user.email,
+                    }),
                 })
-        }
+                    .catch((err) => {
+                        console.error(err)
+                    })
+                if (userRequest) {
+                    const dataUser = await userRequest.json()
+                    setUser(dataUser)
+                }
+            }
+
+        })
     }, [])
     useEffect(() => {
         if (user) {
