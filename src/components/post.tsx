@@ -7,11 +7,12 @@ import { colorPalette } from 'utils/colors'
 
 export default function Post({ post }: { post: { id: number; contentPost: string; date: Date } }) {
     const [liked, setLiked] = useState(false)
+    const date = new Date(post.date)
     return (
         <View>
             <View key={post.id} style={styles.post}>
                 <Markdown>{post.contentPost}</Markdown>
-                <Text>Postado em: {post.date.toLocaleString()}</Text>
+                <Text>Postado em: {date.toLocaleString()}</Text>
                 <View style={styles.likeButtonContainer}>
                     <TouchableOpacity
                         onPress={() => {

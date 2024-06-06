@@ -17,7 +17,7 @@ export default function DashboardScreen() {
             .then((response) => response.json())
             .then((data) => {
                 console.log(data)
-                setPosts(data)
+                setPosts(data.content)
             })
     }, [])
     return (

@@ -19,7 +19,7 @@ export default function LoginScreen() {
         email: '',
         password: '',
     })
-    const {user, setUser} = useContext(userContext)!
+    const { user, setUser } = useContext(userContext)!
     const handleChange = (key: string, value: string) => {
         setFormData({ ...formData, [key]: value })
     }
@@ -32,20 +32,30 @@ export default function LoginScreen() {
             }
         }
         const auth = getAuth(firebaseApp)
-        const user = await signInWithEmailAndPassword(auth, formData.email, formData.password)
-        if(user.user.email) {
-            fetch(`${apiUrl}/user`, {
+        const user = await signInWithEmailAndPassword(auth, formData.email.trim(), formData.password)
+        if (user.user.email) {
+            console.log(
+                `${apiUrl}/user/auth`,
+                JSON.stringify({
+                    id: user.user.uid,
+                    email: formData.email,
+                })
+            )
+            const dataUserRequest = await fetch(`${apiUrl}/user/auth`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                    id: user.user.uid,
                     email: formData.email,
                 }),
             })
-        } 
-        
-        navigation.pop()
+            const dataUser = await dataUserRequest.json()
+            console.log(dataUser)
+            setUser(dataUser)
+            navigation.pop()
+        }
     }
 
     return (
