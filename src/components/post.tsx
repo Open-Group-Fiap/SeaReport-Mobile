@@ -12,21 +12,21 @@ export default function Post({ post }: { post: { id: number; contentPost: string
     const date = new Date(post.date)
     const [likeId, setLikeId] = useState<number | null>(null)
     const { user } = useContext(userContext)!
+    if (!user) return null
+    const handleLiked = async () => {
+        const response = await fetch(apiUrl + '/likes/user/' + user.id + '/post/' + post.id)
+            if (response.ok) {
+                response.json().then((data) => {
+                        setLiked(true)
+                        setLikeId(data.id)
+                        })
+            }
+    }
     useEffect(() => {
         handleLiked()
     }, [])
 
-    if (!user) return null
 
-    const handleLiked = async () => {
-        const response = await fetch(apiUrl + '/likes/user/' + user.id + '/post/' + post.id)
-        if (response.ok) {
-            response.json().then((data) => {
-                setLiked(true)
-                setLikeId(data.id)
-            })
-        }
-    }
 
     const handleLike = async () => {
         const response = await fetch(apiUrl + '/likes', {

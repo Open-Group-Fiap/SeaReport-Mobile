@@ -17,6 +17,7 @@ export default function RegisterScreen() {
     const { user, setUser } = useContext(userContext)!
     const navigation = useNavigation<RegisterScreenProps>()
     const [msg, setMsg] = useState('')
+    const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -45,6 +46,7 @@ export default function RegisterScreen() {
             return
         }
         const auth = getAuth(firebaseApp)
+        setLoading(true)
         const userCredential = await createUserWithEmailAndPassword(
             auth,
             formData.email.toLowerCase().trim(),
@@ -75,6 +77,7 @@ export default function RegisterScreen() {
                 default:
                     setMsg(errorMessage)
             }
+            setLoading(false)
             return
         })
         if (!userCredential) return
@@ -98,10 +101,12 @@ export default function RegisterScreen() {
             .then((data) => {
                 console.log(data)
                 setUser(data)
+                setLoading(false)
                 navigation.pop()
             })
             .catch((error) => {
                 console.log(error)
+                setLoading(false)
                 setMsg('Erro ao criar conta no servidor')
             })
     }
@@ -119,11 +124,13 @@ export default function RegisterScreen() {
                     placeholder="Nome"
                     textContentType="name"
                     value={formData.name}
+                    enabled={!loading}
                     onChangeText={(text) => handleChange('name', text)}
                 />
                 <TextInput
                     style={styles.formInput}
                     placeholder="Email"
+                    enabled={!loading}
                     textContentType="emailAddress"
                     value={formData.email}
                     onChangeText={(text) => handleChange('email', text)}
@@ -131,6 +138,7 @@ export default function RegisterScreen() {
                 <TextInput
                     style={styles.formInput}
                     placeholder="Telefone"
+                    enabled={!loading}
                     textContentType="telephoneNumber"
                     value={formData.phone}
                     onChangeText={(text) => handleChange('phone', text)}
@@ -138,6 +146,7 @@ export default function RegisterScreen() {
                 <TextInput
                     style={styles.formInput}
                     placeholder="Senha"
+                    enabled={!loading}
                     textContentType="password"
                     secureTextEntry={true}
                     value={formData.password}
@@ -148,11 +157,12 @@ export default function RegisterScreen() {
                     placeholder="Confirme sua senha"
                     textContentType="password"
                     secureTextEntry={true}
+                    enabled={!loading}
                     value={formData.confirmPassword}
                     onChangeText={(text) => handleChange('confirmPassword', text)}
                 />
-                <TouchableOpacity style={styles.formButton} onPress={submit}>
-                    <Text style={styles.formButtonText}>Registrar</Text>
+                <TouchableOpacity style={[styles.formButton, loading && styles.formButtonDisabled]} onPress={submit}>
+                    <Text style={styles.formButtonText}>{loading ? 'Carregando...' : 'Registrar'}</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -187,6 +197,12 @@ const styles = StyleSheet.create({
     },
     formButton: {
         backgroundColor: colorPalette.main,
+        borderRadius: 8,
+        padding: 16,
+        width: '80%',
+    },  
+    formButtonDisabled: {
+        backgroundColor: '#aaa',
         borderRadius: 8,
         padding: 16,
         width: '80%',

@@ -16,6 +16,7 @@ type LoginScreenProps = StackNavigationProp<RootStackParamList, 'login'>
 export default function LoginScreen() {
     const navigation = useNavigation<LoginScreenProps>()
     const [msg, setMsg] = useState('')
+    const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -33,6 +34,7 @@ export default function LoginScreen() {
             }
         }
         const auth = getAuth(firebaseApp)
+        setLoading(true)
         const user = await signInWithEmailAndPassword(
             auth,
             formData.email.trim(),
@@ -53,6 +55,7 @@ export default function LoginScreen() {
             } else if (error.code === 'auth/invalid-credential') {
                 setMsg('Email inválido')
             } else setMsg(error.message)
+            setLoading(false)
         })
         if (!user) {
             return
@@ -65,6 +68,7 @@ export default function LoginScreen() {
                     email: formData.email,
                 })
             )
+            setLoading(true)
             const dataUserRequest = await fetch(`${apiUrl}/user/auth`, {
                 method: 'POST',
                 headers: {
@@ -78,6 +82,7 @@ export default function LoginScreen() {
             const dataUser = await dataUserRequest.json()
             console.log(dataUser)
             setUser(dataUser)
+            setLoading(false)
             navigation.pop()
         }
     }
@@ -95,6 +100,7 @@ export default function LoginScreen() {
                     placeholder="Email"
                     textContentType="emailAddress"
                     value={formData.email}
+                    enabled={!loading}
                     onChangeText={(text) => handleChange('email', text)}
                 />
                 <TextInput
@@ -102,11 +108,12 @@ export default function LoginScreen() {
                     placeholder="Senha"
                     textContentType="password"
                     secureTextEntry={true}
+                    enabled={!loading}
                     value={formData.password}
                     onChangeText={(text) => handleChange('password', text)}
                 />
-                <TouchableOpacity style={styles.formButton} onPress={submit}>
-                    <Text style={styles.formButtonText}>Login</Text>
+                <TouchableOpacity style={[styles.formButton, loading && styles.formButtonDisabled]} onPress={submit}>
+                    <Text style={styles.formButtonText}>{loading ? 'Carregando...' : 'Login'}</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -141,6 +148,12 @@ const styles = StyleSheet.create({
     },
     formButton: {
         backgroundColor: colorPalette.main,
+        borderRadius: 8,
+        padding: 16,
+        width: '80%',
+    },
+    formButtonDisabled: {
+        backgroundColor: '#aaa',
         borderRadius: 8,
         padding: 16,
         width: '80%',
