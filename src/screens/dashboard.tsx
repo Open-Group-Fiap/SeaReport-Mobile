@@ -24,7 +24,7 @@ export default function DashboardScreen() {
         <View>
             <SafeAreaView>
                 <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollArea}>
-                    {posts.length > 0 ? (
+                    {posts && posts.length > 0 ? (
                         posts.map((post) => <Post key={post.id} post={post} />)
                     ) : (
                         <Text>Carregando...</Text>

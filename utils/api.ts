@@ -1,1 +1,1 @@
-export const apiUrl = "https://666055c05425580055b3660c.mockapi.io/"
+export const apiUrl = "http://172.24.48.1"

@@ -4,28 +4,19 @@ import { Button, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-n
 
 import { RootStackParamList } from '../navigation'
 import { colorPalette } from 'utils/colors'
-import { getAuth } from 'firebase/auth'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
+import { userContext } from 'utils/context'
 
 type OverviewScreenNavigationProps = StackNavigationProp<RootStackParamList, 'initial'>
 
 export default function InitialScreen() {
     const navigation = useNavigation<OverviewScreenNavigationProps>()
-    const auth = getAuth()
-    const [isLogged, setIsLogged] = useState(false)
-    const user = auth.currentUser
+    const user = useContext(userContext)?.user
     useEffect(() => {
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                setIsLogged(true)
-            } else {
-                setIsLogged(false)
-            }
-        })
-    }, [auth, navigation])
-    useEffect(() => {
-        if (isLogged) navigation.push('home')
-    }, [isLogged, navigation])
+        if (user) {
+            navigation.push('home')
+        }
+    }, [user, navigation])
     return (
         <View style={styles.container}>
             <View style={styles.main}>
@@ -34,12 +25,11 @@ export default function InitialScreen() {
                     <Text style={styles.title}>Sea Report</Text>
                     <Text style={styles.subtitle}>Seu aplicativo de denuncias maritimas.</Text>
                 </View>
-                {isLogged && user && (
+                {user ? (
                     <View>
-                        <Text style={{ color: '#fff' }}>Você está logado como {user.email}</Text>
+                        <Text style={{ color: '#fff' }}>Você está logado como {user.auth.email}</Text>
                     </View>
-                )}
-                {!isLogged && (
+                ) : (
                     <View style={styles.buttons}>
                         <TouchableOpacity
                             style={styles.loginButton}

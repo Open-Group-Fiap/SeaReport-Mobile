@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { AntDesign } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
@@ -8,6 +8,8 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { colorPalette } from 'utils/colors'
 import { RootStackParamList } from '~/navigation'
 import { firebaseApp } from 'utils/firebase'
+import { userContext } from 'utils/context'
+import { apiUrl } from 'utils/api'
 
 type LoginScreenProps = StackNavigationProp<RootStackParamList, 'login'>
 
@@ -17,7 +19,7 @@ export default function LoginScreen() {
         email: '',
         password: '',
     })
-
+    const {user, setUser} = useContext(userContext)!
     const handleChange = (key: string, value: string) => {
         setFormData({ ...formData, [key]: value })
     }
@@ -31,7 +33,18 @@ export default function LoginScreen() {
         }
         const auth = getAuth(firebaseApp)
         const user = await signInWithEmailAndPassword(auth, formData.email, formData.password)
-        console.log(user)
+        if(user.user.email) {
+            fetch(`${apiUrl}/user`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: formData.email,
+                }),
+            })
+        } 
+        
         navigation.pop()
     }
 

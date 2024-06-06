@@ -6,14 +6,15 @@ import { Alert, StyleSheet, Text, View } from 'react-native'
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler'
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 import { colorPalette } from 'utils/colors'
-import { RootStackParamList, userContext } from '~/navigation'
+import { RootStackParamList } from '~/navigation'
 import { firebaseApp } from 'utils/firebase'
 import { apiUrl } from 'utils/api'
+import { userContext } from 'utils/context'
 
 type RegisterScreenProps = StackNavigationProp<RootStackParamList, 'register'>
 
 export default function RegisterScreen() {
-    const [user, setUser] = useContext(userContext)!
+    const { user, setUser } = useContext(userContext)!
     const navigation = useNavigation<RegisterScreenProps>()
     const [formData, setFormData] = useState({
         name: '',
@@ -26,7 +27,7 @@ export default function RegisterScreen() {
     const handleChange = (key: string, value: string) => {
         setFormData({ ...formData, [key]: value })
     }
-    const submit = () => {
+    const submit = async () => {
         console.log(formData)
         if (formData.password !== formData.confirmPassword) {
             Alert.alert('Erro ao criar conta', 'As senhas não coincidem')
@@ -43,42 +44,50 @@ export default function RegisterScreen() {
             }
         }
         const auth = getAuth(firebaseApp)
-        createUserWithEmailAndPassword(auth, formData.email, formData.password)
-            .then(async (userCredential) => {
-                const user = userCredential.user
-                console.log(user)
-                Alert.alert('Conta criada', 'Sua conta foi criada com sucesso!')
-                fetch(`${apiUrl}/user`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        username: formData.name,
-                        phoneNumber: formData.phone,
-                        auth: {
-                            id: user.uid,
-                            email: user.email,
-                        },
-                    }),
-                })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        console.log(data)
-                        setUser(data)
-                        navigation.pop()
-                    })
-                    .catch((error) => {
-                        console.error(error)
-                        Alert.alert('Erro ao criar conta', 'Erro ao criar conta no servidor')
-                    })
+        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password).catch((error) => {
+            const errorCode = error.code
+            const errorMessage = error.message
+            console.error(errorCode, errorMessage)
+            Alert.alert('Erro ao criar conta', errorMessage)
+        })
+        if (!userCredential) return
+        const user = userCredential.user
+        console.log(`${apiUrl}/user`)
+        console.log(user)
+        console.log(
+            JSON.stringify({
+                username: formData.name,
+                phoneNumber: formData.phone,
+                auth: { id: user.uid, email: user.email },
+            })
+        )
+        const a = await fetch(`${apiUrl}/user`)
+        console.log(await (a.json()))
+        await fetch(`${apiUrl}/user`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: formData.name,
+                phoneNumber: formData.phone,
+                auth: {
+                    id: user.uid,
+                    email: user.email,
+                },
+            }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data)
+                setUser(data)
+                navigation.pop()
             })
             .catch((error) => {
-                const errorCode = error.code
-                const errorMessage = error.message
-                console.error(errorCode, errorMessage)
-                Alert.alert('Erro ao criar conta', errorMessage)
+                console.error(error)
+                Alert.alert('Erro ao criar conta', 'Erro ao criar conta no servidor')
             })
+        console.log('user', user)
     }
 
     return (

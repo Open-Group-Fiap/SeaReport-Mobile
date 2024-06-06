@@ -9,6 +9,7 @@ import * as firebaseAuth from 'firebase/auth'
 import LoginScreen from '~/screens/login'
 import HomeScreen from './homeTabs'
 import { Dispatch, SetStateAction, createContext, useState } from 'react'
+import { userContext } from 'utils/context'
 
 const reactNativePersistence = (firebaseAuth as any).getReactNativePersistence
 
@@ -22,13 +23,15 @@ export type RootStackParamList = {
 export const auth = firebaseAuth.initializeAuth(firebaseApp, {
     persistence: reactNativePersistence(AsyncStorage),
 })
-type UserState = [TUser | null, Dispatch<SetStateAction<TUser | null>>]
+
 const Stack = createStackNavigator<RootStackParamList>()
-export const userContext = createContext<UserState | null>(null)
 export default function RootStack() {
-    const user = useState(null as TUser | null)
+    const [user, setUser] = useState(null as TUser | null)
     return (
-        <userContext.Provider value={user}>
+        <userContext.Provider value={{
+            user,
+            setUser,
+        }}>
             <NavigationContainer>
                 <Stack.Navigator
                     initialRouteName="initial"
