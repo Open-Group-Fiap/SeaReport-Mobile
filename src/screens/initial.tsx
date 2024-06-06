@@ -37,6 +37,9 @@ export default function InitialScreen() {
                     setUser(dataUser)
                 }
             }
+            else {
+                setUser(null)
+            }
 
         })
     }, [])
