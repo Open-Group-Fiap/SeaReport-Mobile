@@ -44,7 +44,11 @@ export default function RegisterScreen() {
             }
         }
         const auth = getAuth(firebaseApp)
-        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password).catch((error) => {
+        const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            formData.email,
+            formData.password
+        ).catch((error) => {
             const errorCode = error.code
             const errorMessage = error.message
             console.error(errorCode, errorMessage)
@@ -62,7 +66,7 @@ export default function RegisterScreen() {
             })
         )
         const a = await fetch(`${apiUrl}/user`)
-        console.log(await (a.json()))
+        console.log(await a.json())
         await fetch(`${apiUrl}/user`, {
             method: 'POST',
             headers: {
@@ -71,6 +75,7 @@ export default function RegisterScreen() {
             body: JSON.stringify({
                 username: formData.name,
                 phoneNumber: formData.phone,
+                xp: 0,
                 auth: {
                     id: user.uid,
                     email: user.email,
