@@ -12,8 +12,8 @@ export default function Post({ post }: { post: { id: number; contentPost: string
     const date = new Date(post.date)
     const [likeId, setLikeId] = useState<number | null>(null)
     const { user } = useContext(userContext)!
-    if (!user) return null
     const handleLiked = async () => {
+        if(!user) return
         const response = await fetch(apiUrl + '/likes/user/' + user.id + '/post/' + post.id)
             if (response.ok) {
                 response.json().then((data) => {
@@ -29,6 +29,7 @@ export default function Post({ post }: { post: { id: number; contentPost: string
 
 
     const handleLike = async () => {
+        if(!user) return
         const response = await fetch(apiUrl + '/likes', {
             method: 'POST',
             headers: {
