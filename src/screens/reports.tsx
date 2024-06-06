@@ -25,7 +25,7 @@ export default function ReportsScreen() {
         fetch(`${apiUrl}/report/user/${user.id}`)
             .then((response) => {
                 if (!response.ok) {
-                    return {content: []}
+                    return { content: [] }
                 }
                 return response.json()
             })
@@ -33,7 +33,8 @@ export default function ReportsScreen() {
                 if (data.content.length > 0) {
                     setReports(data.content)
                 }
-            }).catch((error) => {
+            })
+            .catch((error) => {
                 console.error(error)
             })
     }, [])
@@ -61,7 +62,7 @@ export default function ReportsScreen() {
                             </View>
                         ))
                     ) : (
-                        <Text>Sem denuncias!</Text>
+                        <Text style={styles.noReports}>Sem denuncias!</Text>
                     )}
                 </ScrollView>
             </SafeAreaView>
@@ -93,5 +94,9 @@ const styles = StyleSheet.create({
         margin: 10,
         backgroundColor: colorPalette.main,
         borderRadius: 10,
+    },
+    noReports: {
+        fontSize: 18,
+        textAlign: 'center',
     },
 })
