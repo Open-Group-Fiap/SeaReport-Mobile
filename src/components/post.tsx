@@ -1,13 +1,58 @@
 import { AntDesign } from '@expo/vector-icons'
-import { useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Markdown from 'react-native-markdown-display'
+import { apiUrl } from 'utils/api'
 import { colorPalette } from 'utils/colors'
+import { userContext } from 'utils/context'
 
 export default function Post({ post }: { post: { id: number; contentPost: string; date: Date } }) {
     const [liked, setLiked] = useState(false)
     const date = new Date(post.date)
+    const [likeId, setLikeId] = useState<number | null>(null)
+    const { user } = useContext(userContext)!
+    useEffect(() => {
+        handleLiked()
+    }, [])
+
+    if (!user) return null
+
+    const handleLiked = async () => {
+        const response = await fetch(apiUrl + '/likes/user/' + user.id + '/post/' + post.id)
+        if (response.ok) {
+            response.json().then((data) => {
+                setLiked(true)
+                setLikeId(data.id)
+            })
+        }
+    }
+
+    const handleLike = async () => {
+        const response = await fetch(apiUrl + '/likes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ idPost: post.id, idUser: user.id }),
+        })
+        if (response.ok) {
+            response.json().then((data) => {
+                setLiked(true)
+                setLikeId(data.id)
+            })
+        }
+    }
+
+    const handleUnlike = async () => {
+        const response = await fetch(apiUrl + '/likes/' + likeId, {
+            method: 'DELETE',
+        })
+        if (response.ok) {
+            setLiked(false)
+        }
+    }
+
     return (
         <View>
             <View key={post.id} style={styles.post}>
@@ -16,7 +61,7 @@ export default function Post({ post }: { post: { id: number; contentPost: string
                 <View style={styles.likeButtonContainer}>
                     <TouchableOpacity
                         onPress={() => {
-                            setLiked(!liked)
+                            liked ? handleUnlike() : handleLike()
                         }}>
                         <AntDesign
                             name={liked ? 'heart' : 'hearto'}
