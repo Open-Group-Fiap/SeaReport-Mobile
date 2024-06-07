@@ -23,10 +23,8 @@ export default function DashboardScreen() {
 
     useEffect(() => {
         async function getPosts() {
-            console.log('getPosts')
             try {
                 const posts = await AsyncStorage.getItem('posts')
-                console.log(posts)
                 if (posts) {
                     const postsStorage = JSON.parse(posts) as TPostStorage
                     if (postsStorage.timestamp + 300000 > Date.now()) {
@@ -40,7 +38,6 @@ export default function DashboardScreen() {
                     throw new Error('Failed to fetch posts')
                 }
                 const data = await response.json()
-                console.log(data)
                 await AsyncStorage.setItem(
                     'posts',
                     JSON.stringify({ posts: data.content, timestamp: Date.now() })
