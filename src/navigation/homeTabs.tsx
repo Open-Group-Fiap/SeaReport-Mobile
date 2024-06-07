@@ -23,7 +23,10 @@ export default function HomeScreen() {
         const auth = getAuth()
         auth.onAuthStateChanged((user) => {
             if (!user) {
-                navigation.replace('initial')
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'initial' }],
+                })
             }
         })
     }, [navigation])
