@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { Alert, StyleSheet, Text, View } from 'react-native'
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler'
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 import { colorPalette } from 'utils/colors'
 import { RootStackParamList } from '~/navigation'
 import { firebaseApp } from 'utils/firebase'
@@ -16,7 +16,6 @@ type RegisterScreenProps = StackNavigationProp<RootStackParamList, 'register'>
 export default function RegisterScreen() {
     const { user, setUser } = useContext(userContext)!
     const navigation = useNavigation<RegisterScreenProps>()
-    const [msg, setMsg] = useState('')
     const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
         name: '',
@@ -27,88 +26,71 @@ export default function RegisterScreen() {
     })
 
     const handleChange = (key: string, value: string) => {
-        setFormData({ ...formData, [key]: value })
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            [key]: value,
+        }))
     }
+
     const submit = async () => {
         console.log(formData)
+
         for (const key in formData) {
             if (formData[key as keyof typeof formData] === '') {
-                setMsg('Preencha todos o campos')
+                Alert.alert('Erro', 'Preencha todos os campos')
                 return
             }
         }
+
         if (formData.password !== formData.confirmPassword) {
-            setMsg('As senhas não coincidem')
+            Alert.alert('Erro', 'As senhas não coincidem')
             return
         }
+
         if (formData.password.length < 6) {
-            setMsg('A senha deve ter pelo menos 6 caracteres')
+            Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres')
             return
         }
+
         const auth = getAuth(firebaseApp)
         setLoading(true)
-        const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            formData.email.toLowerCase().trim(),
-            formData.password
-        ).catch((error) => {
-            const errorCode = error.code
-            const errorMessage = error.message
-            console.log(errorCode, errorMessage)
-            switch (errorCode) {
-                case 'auth/email-already-in-use':
-                    setMsg('Email já existe')
-                    break
-                case 'auth/invalid-email':
-                    setMsg('Email inválido')
-                    break
-                case 'auth/network-request-failed':
-                    setMsg('Erro de rede')
-                    break
-                case 'auth/operation-not-allowed':
-                    setMsg('Email inválido')
-                    break
-                case 'auth/user-disabled':
-                    setMsg('Email inválido')
-                    break
-                case 'auth/invalid-credential':
-                    setMsg('Email inválido')
-                    break
-                default:
-                    setMsg(errorMessage)
-            }
-            setLoading(false)
-            return
-        })
-        if (!userCredential) return
-        const user = userCredential.user
-        await fetch(`${apiUrl}/user`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: formData.name,
-                phoneNumber: formData.phone,
-                xp: 0,
-                auth: {
-                    id: user.uid,
-                    email: user.email,
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                formData.email.toLowerCase().trim(),
+                formData.password
+            )
+            // Por algum motivo, o firebase está loga o usuário no momento da criação do usuário.
+            // Por isso, precisamos fazer o login manualmente.
+            signInWithEmailAndPassword(auth, formData.email.toLowerCase().trim(), formData.password)
+            const user = userCredential.user;
+            const response = await fetch(`${apiUrl}/user`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
                 },
-            }),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data)
-                setUser(data)
+                body: JSON.stringify({
+                    username: formData.name,
+                    phoneNumber: formData.phone,
+                    xp: 0,
+                    auth: {
+                        id: user.uid,
+                        email: user.email,
+                    },
+                }),
+            });
+            
+            if (response.ok) {
+                console.log(userCredential.user)
                 setLoading(false)
                 navigation.pop()
-            })
-            .catch((error) => {
-                console.log(error)
-                setLoading(false)
-                setMsg('Erro ao criar conta no servidor')
-            })
+            }
+        } catch (error) {
+            console.log(error)
+            setLoading(false)
+            Alert.alert('Erro', 'Erro ao criar conta no servidor')
+        }
     }
 
     return (
@@ -117,20 +99,19 @@ export default function RegisterScreen() {
                 <AntDesign name="arrowleft" size={24} />
             </TouchableOpacity>
             <View style={styles.form}>
-                <Text style={styles.formHeader}>Digite suas informações: </Text>
-                {msg && <Text style={styles.formMsg}>{msg}</Text>}
+                <Text style={styles.formHeader}>Digite suas informações:</Text>
                 <TextInput
                     style={styles.formInput}
                     placeholder="Nome"
                     textContentType="name"
                     value={formData.name}
-                    enabled={!loading}
+                    editable={!loading}
                     onChangeText={(text) => handleChange('name', text)}
                 />
                 <TextInput
                     style={styles.formInput}
                     placeholder="Email"
-                    enabled={!loading}
+                    editable={!loading}
                     textContentType="emailAddress"
                     value={formData.email}
                     onChangeText={(text) => handleChange('email', text)}
@@ -138,7 +119,7 @@ export default function RegisterScreen() {
                 <TextInput
                     style={styles.formInput}
                     placeholder="Telefone"
-                    enabled={!loading}
+                    editable={!loading}
                     textContentType="telephoneNumber"
                     value={formData.phone}
                     onChangeText={(text) => handleChange('phone', text)}
@@ -146,7 +127,7 @@ export default function RegisterScreen() {
                 <TextInput
                     style={styles.formInput}
                     placeholder="Senha"
-                    enabled={!loading}
+                    editable={!loading}
                     textContentType="password"
                     secureTextEntry={true}
                     value={formData.password}
@@ -157,12 +138,17 @@ export default function RegisterScreen() {
                     placeholder="Confirme sua senha"
                     textContentType="password"
                     secureTextEntry={true}
-                    enabled={!loading}
+                    editable={!loading}
                     value={formData.confirmPassword}
                     onChangeText={(text) => handleChange('confirmPassword', text)}
                 />
-                <TouchableOpacity style={[styles.formButton, loading && styles.formButtonDisabled]} onPress={submit}>
-                    <Text style={styles.formButtonText}>{loading ? 'Carregando...' : 'Registrar'}</Text>
+                <TouchableOpacity
+                    style={[styles.formButton, loading && styles.formButtonDisabled]}
+                    onPress={submit}
+                    disabled={loading}>
+                    <Text style={styles.formButtonText}>
+                        {loading ? 'Carregando...' : 'Registrar'}
+                    </Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -182,11 +168,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         marginBottom: 16,
     },
-    formMsg: {
-        color: 'red',
-        fontSize: 16,
-        marginBottom: 16,
-    },
     formInput: {
         backgroundColor: '#f2f2f2',
         borderRadius: 8,
@@ -200,7 +181,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 16,
         width: '80%',
-    },  
+    },
     formButtonDisabled: {
         backgroundColor: '#aaa',
         borderRadius: 8,

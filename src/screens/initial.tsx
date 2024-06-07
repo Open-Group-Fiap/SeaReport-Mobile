@@ -1,52 +1,22 @@
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { Button, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 import { RootStackParamList } from '../navigation'
 import { colorPalette } from 'utils/colors'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect } from 'react'
 import { userContext } from 'utils/context'
-import { getAuth } from 'firebase/auth'
 import { firebaseApp } from 'utils/firebase'
-import { apiUrl } from 'utils/api'
+import { getAuth } from 'firebase/auth'
 
 type OverviewScreenNavigationProps = StackNavigationProp<RootStackParamList, 'initial'>
 
 export default function InitialScreen() {
     const navigation = useNavigation<OverviewScreenNavigationProps>()
-    const { user, setUser } = useContext(userContext)!
-    const auth = getAuth(firebaseApp)
+    const { user } = useContext(userContext)!
     useEffect(() => {
-        auth.onAuthStateChanged(async (user) => {
-            if (user && user.email) {
-                console.log(user)
-                const userRequest = await fetch(`${apiUrl}/user/auth`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: user.uid,
-                        email: user.email,
-                    }),
-                }).catch((err) => {
-                    console.error(err)
-                })
-                if (userRequest) {
-                    const dataUserText = await userRequest.text()
-                    try {
-                        const dataUser = JSON.parse(dataUserText)
-                        setUser(dataUser)
-                    } catch (err) {
-                        auth.signOut()
-                    }
-                }
-            } else {
-                setUser(null)
-            }
-        })
-    }, [])
-    useEffect(() => {
+        const auth = getAuth(firebaseApp)
+        console.log(auth)
         if (user) {
             navigation.push('home')
         }
