@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { NavigationContainer, useNavigation } from '@react-navigation/native'
-import { Text, View } from 'react-native'
+import { Alert, BackHandler, Text, View } from 'react-native'
 import DashboardScreen from '~/screens/dashboard'
 import { RootStackParamList } from '.'
 import { StackNavigationProp } from '@react-navigation/stack'
@@ -27,6 +27,12 @@ export default function HomeScreen() {
             }
         })
     }, [navigation])
+    useEffect(() => {
+        BackHandler.addEventListener('hardwareBackPress', () => {
+            BackHandler.exitApp()
+            return true
+        })
+    }, [])
     return (
         <NavigationContainer independent={true}>
             <Tab.Navigator

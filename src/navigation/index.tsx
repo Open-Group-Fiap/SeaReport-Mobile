@@ -59,10 +59,11 @@ export default function RootStack() {
     }, [])
 
     return (
-        <userContext.Provider value={{
-            user,
-            setUser,
-        }}>
+        <userContext.Provider
+            value={{
+                user,
+                setUser,
+            }}>
             <NavigationContainer>
                 <Stack.Navigator
                     initialRouteName="initial"
@@ -72,7 +73,11 @@ export default function RootStack() {
                     <Stack.Screen name="initial" component={InitialScreen} />
                     <Stack.Screen name="register" component={RegisterScreen} />
                     <Stack.Screen name="login" component={LoginScreen} />
-                    <Stack.Screen name="home" component={HomeScreen} />
+                    <Stack.Screen
+                        name="home"
+                        component={HomeScreen}
+                        options={{ gestureEnabled: false }}
+                    />
                 </Stack.Navigator>
             </NavigationContainer>
         </userContext.Provider>
