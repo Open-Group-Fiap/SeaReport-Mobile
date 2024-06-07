@@ -71,7 +71,7 @@ export default function ReportButton() {
         }
     }, [modal])
     return (
-        <TouchableOpacity style={styles.button}>
+        <View>
             <Modal animationType="slide" visible={modal} onRequestClose={() => setModal(false)}>
                 <View style={styles.modal}>
                     {!locationInfo.permission ? <Text>{locationInfo.msg}</Text> : null}
@@ -98,7 +98,7 @@ export default function ReportButton() {
                                         style={[
                                             styles.modalCategoryText,
                                             selectedCategory === key &&
-                                            styles.modalCategoryTextSelected,
+                                                styles.modalCategoryTextSelected,
                                         ]}>
                                         {key}
                                     </Text>
@@ -116,10 +116,15 @@ export default function ReportButton() {
                     </Pressable>
                 </View>
             </Modal>
-            <Text style={styles.text} onPress={() => setModal(true)}>
-                +
-            </Text>
-        </TouchableOpacity>
+
+            <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                    setModal(true)
+                }}>
+                <Text style={styles.text}>+</Text>
+            </TouchableOpacity>
+        </View>
     )
 }
 const styles = StyleSheet.create({
