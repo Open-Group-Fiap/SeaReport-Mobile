@@ -11,7 +11,6 @@
         ```json
         {
             "username": "joao_silva",
-            "password": "Joao@123",
             "phoneNumber": "+5511987654321",
             "auth": {
                 "id": "yO8WwMFkN5Za9zZ6jncW7zxlJTh1",
