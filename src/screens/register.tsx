@@ -80,9 +80,11 @@ export default function RegisterScreen() {
             setLoading(false)
             return
         })
+        setLoading(false)
         if (!userCredential) return
         const user = userCredential.user
-        await fetch(`${apiUrl}/user`, {
+        setLoading(true)
+        const userRequest = await fetch(`${apiUrl}/user`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -96,19 +98,17 @@ export default function RegisterScreen() {
                     email: user.email,
                 },
             }),
+        }).catch((error) => {
+            console.log(error)
+            setLoading(false)
+            setMsg('Erro ao criar conta no servidor')
         })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data)
-                setUser(data)
-                setLoading(false)
-                navigation.pop()
-            })
-            .catch((error) => {
-                console.log(error)
-                setLoading(false)
-                setMsg('Erro ao criar conta no servidor')
-            })
+        if (!userRequest) return
+        const dataUser = await userRequest.json()
+        setUser(dataUser)
+        setLoading(false)
+        console.log(dataUser, user, loading)
+        navigation.pop()
     }
 
     return (
@@ -161,8 +161,12 @@ export default function RegisterScreen() {
                     value={formData.confirmPassword}
                     onChangeText={(text) => handleChange('confirmPassword', text)}
                 />
-                <TouchableOpacity style={[styles.formButton, loading && styles.formButtonDisabled]} onPress={submit}>
-                    <Text style={styles.formButtonText}>{loading ? 'Carregando...' : 'Registrar'}</Text>
+                <TouchableOpacity
+                    style={[styles.formButton, loading && styles.formButtonDisabled]}
+                    onPress={submit}>
+                    <Text style={styles.formButtonText}>
+                        {loading ? 'Carregando...' : 'Registrar'}
+                    </Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -200,7 +204,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 16,
         width: '80%',
-    },  
+    },
     formButtonDisabled: {
         backgroundColor: '#aaa',
         borderRadius: 8,
