@@ -50,7 +50,7 @@ export default function ReportButton() {
         })
         if (response.status === 201) {
             Alert.alert('Denúncia enviada', 'Sua denúncia foi enviada com sucesso')
-            setUser({ ...user, xp: user.xp + 50 })
+            setUser({ ...user })
             setModal(false)
         }
     }
