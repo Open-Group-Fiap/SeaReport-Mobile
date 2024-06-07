@@ -6,6 +6,8 @@ import { RootStackParamList } from '../navigation'
 import { colorPalette } from 'utils/colors'
 import { useContext, useEffect } from 'react'
 import { userContext } from 'utils/context'
+import { firebaseApp } from 'utils/firebase'
+import { getAuth } from 'firebase/auth'
 
 type OverviewScreenNavigationProps = StackNavigationProp<RootStackParamList, 'initial'>
 
@@ -13,6 +15,8 @@ export default function InitialScreen() {
     const navigation = useNavigation<OverviewScreenNavigationProps>()
     const { user } = useContext(userContext)!
     useEffect(() => {
+        const auth = getAuth(firebaseApp)
+        console.log(auth)
         if (user) {
             navigation.push('home')
         }
