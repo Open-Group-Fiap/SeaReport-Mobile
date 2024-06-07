@@ -24,3 +24,4 @@
 
 -   API é descrita em [API.md](https://github.com/open-group-fiap/SeaReport-mobile/blob/main/API.md)
 -   Recomendamos usar [Bun](https://bun.sh) para instalar as dependências e rodar o projeto
+-   O deploy do Java no render tem cold starts de até 1 minuto, então o primeiro carregamento do aplicativo pode ser lento, porém depois disso ele carrega as coisas API mais rápido.
