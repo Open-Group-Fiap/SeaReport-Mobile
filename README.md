@@ -8,6 +8,10 @@
 | Leonardo dos Santos Guerra     | RM99738 |
 | Maria Eduarda Ferreira da Mata | RM99004 |
 
+## LINK DO REPOSITORIO DA APLICAÇÃO
+
+[Link](https://github.com/open-group-fiap/SeaReport-mobile)
+
 ## LINK DO REPOSITORIO DA API NO GITHUB
 
 [Link](https://github.com/jaciteixeira/SeaReport)
